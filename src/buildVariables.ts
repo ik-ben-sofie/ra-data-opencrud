@@ -302,17 +302,27 @@ const buildCreateVariables = (introspectionResults: IntrospectionResult) => (
           return acc;
         }
 
+        if(params.data[`${key}Ids`]) {
+            return {
+                ...acc,
+                data: {
+                    ...acc.data,
+                    [key]: {
+                        [PRISMA_CONNECT]: params.data[`${key}Ids`].map((id: string) => ({
+                            id
+                        }))
+                    }
+                }
+            };
+        }
+
         return {
           ...acc,
-          data: {
+            data: {
             ...acc.data,
-            [key]: {
-              [PRISMA_CONNECT]: params.data[`${key}Ids`].map((id: string) => ({
-                id
-              }))
+                [key]: params.data[key]
             }
-          }
-        };
+        }
       }
 
       if (isObject(params.data[key])) {
