@@ -34,7 +34,7 @@ describe('buildVariables', () => {
       };
 
       expect(
-        buildVariables(introspectionResult as IntrospectionResult)(
+        buildVariables(introspectionResult as unknown as IntrospectionResult)(
           { type: { name: 'Post' } } as Resource,
           GET_LIST,
           params
@@ -162,7 +162,7 @@ describe('buildVariables', () => {
       };
 
       expect(
-        buildVariables(introspectionResult as IntrospectionResult)(
+        buildVariables(introspectionResult as unknown as IntrospectionResult)(
           { type: { name: 'Post' } } as Resource,
           CREATE,
           params
@@ -289,7 +289,7 @@ describe('buildVariables', () => {
       };
 
       expect(
-        buildVariables(introspectionResult as IntrospectionResult)(
+        buildVariables(introspectionResult as unknown as IntrospectionResult)(
           { type: { name: 'Post' } } as Resource,
           UPDATE,
           params

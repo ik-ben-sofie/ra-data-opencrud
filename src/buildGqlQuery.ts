@@ -1,14 +1,14 @@
 import {
-  TypeKind,
-  parse,
-  IntrospectionField,
-  DocumentNode,
-  IntrospectionType,
-  IntrospectionObjectType,
-  SelectionNode,
-  VariableDefinitionNode,
-  ArgumentNode,
-  FieldNode
+    TypeKind,
+    parse,
+    IntrospectionField,
+    DocumentNode,
+    IntrospectionType,
+    IntrospectionObjectType,
+    SelectionNode,
+    VariableDefinitionNode,
+    ArgumentNode,
+    FieldNode, ASTNode
 } from 'graphql';
 import { QUERY_TYPES } from 'ra-data-graphql';
 import { GET_LIST, GET_MANY, GET_MANY_REFERENCE, DELETE } from 'react-admin';
@@ -25,7 +25,7 @@ export interface Query {
 }
 
 export const buildFields = (introspectionResults: IntrospectionResult) => (
-  fields: IntrospectionField[]
+  fields: readonly IntrospectionField[]
 ): FieldNode[] => {
   return fields.reduce(
     (acc: FieldNode[], field) => {
@@ -114,7 +114,7 @@ export const buildArgs = (
   return query.args
     .filter(arg => validVariables.includes(arg.name))
     .reduce(
-      (acc: ArgumentNode[], arg) => [
+      (acc, arg) => [
         ...acc,
         gqlTypes.argument(
           gqlTypes.name(arg.name),
@@ -147,7 +147,7 @@ export const buildApolloArgs = (
           getArgType(arg)
         )
       ],
-      [] as VariableDefinitionNode[]
+      []
     );
 };
 
@@ -182,7 +182,6 @@ const buildFieldsFromFragment = (
       );
     }
   }
-
   return (parsedFragment as any).definitions[0].selectionSet.selections;
 };
 

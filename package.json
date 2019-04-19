@@ -6,14 +6,15 @@
   "sideEffects": false,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/weakky/ra-data-opencrud.git"
+    "url": "git+https://github.com/ivopatty/ra-data-opencrud.git"
   },
   "bugs": {
-    "url": "https://github.com/weakky/ra-data-opencrud/issues"
+    "url": "https://github.com/ivopatty/ra-data-opencrud/issues"
   },
-  "homepage": "https://github.com/weakky/ra-data-opencrud#readme",
+  "homepage": "https://github.com/ivopatty/ra-data-opencrud#readme",
   "authors": [
-    "Flavian DESVERNE"
+    "Flavian DESVERNE",
+    "Ivo Patty"
   ],
   "keywords": [
     "reactjs",
@@ -34,25 +35,38 @@
     "graphql-tag": "^2.6.1",
     "lodash": "~4.17.5",
     "pluralize": "^7.0.0",
-    "ra-data-graphql": "^2.3.0"
+    "ra-data-graphql": "^2.8.4"
   },
   "peerDependencies": {
     "graphql": "^0.13.2",
-    "react-admin": "^2.3.0"
+    "react-admin": "^2.8.0"
   },
   "devDependencies": {
-    "@types/jest": "^23.3.2",
+    "@types/graphql": "^14.2.0",
+    "@types/jest": "^24.0.11",
     "@types/lodash": "^4.14.116",
     "@types/pluralize": "^0.0.29",
-    "apollo-client": "^2.4.2",
+    "apollo-client": "^2.5.1",
     "babel-cli": "~6.26.0",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-env": "^1.7.0",
     "cross-env": "^5.2.0",
-    "graphql": "^0.13.2",
+    "graphql": "14.2.1",
     "jest": "^23.6.0",
-    "react-admin": "^2.3.0",
+    "react-admin": "^2.8.0",
     "rimraf": "^2.6.2",
+    "ts-jest": "^24.0.2",
     "typescript": "^3.0.3"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "transform": {
+      "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": ".*\\.test\\.(ts|tsx|js)$"
   }
 }
