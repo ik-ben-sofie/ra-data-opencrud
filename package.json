@@ -1,6 +1,6 @@
 {
-  "name": "ra-data-opencrud",
-  "version": "0.0.7",
+  "name": "@ipcloud/ra-data-opencrud",
+  "version": "0.0.8",
   "description": "A Prisma/GraphCMS data provider for react-admin",
   "main": "dist/index.js",
   "sideEffects": false,
@@ -38,7 +38,7 @@
     "ra-data-graphql": "^2.8.4"
   },
   "peerDependencies": {
-    "graphql": "^0.13.2",
+    "graphql": "^14.0.0",
     "react-admin": "^2.8.0"
   },
   "devDependencies": {
