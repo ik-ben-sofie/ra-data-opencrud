@@ -54,104 +54,181 @@ describe('buildVariables', () => {
   });
 
   describe('CREATE', () => {
-    it('returns correct variables', () => {
-      const introspectionResult = {
-        types: [
-          {
-            name: 'Post',
-            fields: [
-              {
-                name: 'title'
+    const introspectionResult = {
+      types: [
+        {
+          name: 'Post',
+          fields: [
+            {
+              name: 'title'
+            }
+          ]
+        },
+        {
+          name: 'PostCreateInput',
+          kind: TypeKind.INPUT_OBJECT,
+          inputFields: [
+            {
+              name: 'author',
+              type: {
+                kind: TypeKind.NON_NULL,
+                ofType: {
+                  kind: TypeKind.INPUT_OBJECT,
+                  name: 'AuthorCreateOneInput'
+                }
               }
-            ]
-          },
-          {
-            name: 'PostCreateInput',
-            kind: TypeKind.INPUT_OBJECT,
-            inputFields: [
-              {
-                name: 'author',
-                type: {
-                  kind: TypeKind.NON_NULL,
-                  ofType: {
-                    kind: TypeKind.INPUT_OBJECT,
-                    name: 'AuthorCreateOneInput'
-                  }
+            },
+            {
+              name: 'tags',
+              type: {
+                kind: TypeKind.NON_NULL,
+                ofType: {
+                  kind: TypeKind.INPUT_OBJECT,
+                  name: 'TagCreateManyInput'
+                }
+              }
+            },
+            {
+              name: 'title',
+              type: {
+                kind: TypeKind.SCALAR,
+                name: 'String'
+              }
+            }
+          ]
+        },
+        {
+          name: 'AuthorCreateOneInput',
+          kind: TypeKind.INPUT_OBJECT,
+          inputFields: [
+            {
+              name: 'connect',
+              type: {
+                kind: TypeKind.NON_NULL,
+                ofType: {
+                  kind: TypeKind.INPUT_OBJECT,
+                  name: 'AuthorWhereUniqueInput'
+                }
+              }
+            },
+            {
+              name: 'create',
+              type: {
+                kind: TypeKind.NON_NULL,
+                ofType: {
+                  kind: TypeKind.INPUT_OBJECT,
+                  name: 'AuthorCreateInput'
                 }
               },
-              {
-                name: 'tags',
-                type: {
-                  kind: TypeKind.NON_NULL,
-                  ofType: {
-                    kind: TypeKind.INPUT_OBJECT,
-                    name: 'TagCreateManyInput'
-                  }
+            }
+          ]
+        },
+        {
+          name: 'AuthorCreateInput',
+          kind: TypeKind.INPUT_OBJECT,
+          inputFields: [{
+            name: 'name',
+            type: {
+              kind: TypeKind.SCALAR,
+              name: 'String'
+            }
+          }]
+        },
+        {
+          name: 'AuthorWhereUniqueInput',
+          kind: TypeKind.INPUT_OBJECT,
+          inputFields: [
+            {
+              name: 'id',
+              type: {
+                kind: TypeKind.SCALAR,
+                name: 'String'
+              }
+            }
+          ]
+        },
+        {
+          name: 'TagCreateManyInput',
+          kind: TypeKind.INPUT_OBJECT,
+          inputFields: [
+            {
+              name: 'connect',
+              type: {
+                kind: TypeKind.NON_NULL,
+                ofType: {
+                  kind: TypeKind.INPUT_OBJECT,
+                  name: 'TagWhereUniqueInput'
                 }
               }
-            ]
-          },
-          {
-            name: 'AuthorCreateOneInput',
-            kind: TypeKind.INPUT_OBJECT,
-            inputFields: [
-              {
-                name: 'connect',
-                type: {
-                  kind: TypeKind.NON_NULL,
-                  ofType: {
-                    kind: TypeKind.INPUT_OBJECT,
-                    name: 'AuthorWhereUniqueInput'
-                  }
+            },
+            {
+              name: 'create',
+              type: {
+                kind: TypeKind.NON_NULL,
+                ofType: {
+                  kind: TypeKind.INPUT_OBJECT,
+                  name: 'TagCreateInput'
                 }
               }
-            ]
-          },
-          {
-            name: 'AuthorWhereUniqueInput',
-            kind: TypeKind.INPUT_OBJECT,
-            inputFields: [
-              {
-                name: 'id',
-                type: {
-                  kind: TypeKind.SCALAR,
-                  name: 'String'
-                }
+            }
+          ]
+        },
+        {
+          name: 'TagCreateInput',
+          kind: TypeKind.INPUT_OBJECT,
+          inputFields: [{
+            name: 'name',
+            type: {
+              kind: TypeKind.SCALAR,
+              name: 'String'
+            }
+          }]
+        },
+        {
+          name: 'TagWhereUniqueInput',
+          kind: TypeKind.INPUT_OBJECT,
+          inputFields: [
+            {
+              name: 'id',
+              type: {
+                kind: TypeKind.SCALAR,
+                name: 'String'
               }
-            ]
-          },
-          {
-            name: 'TagCreateManyInput',
-            kind: TypeKind.INPUT_OBJECT,
-            inputFields: [
-              {
-                name: 'connect',
-                type: {
-                  kind: TypeKind.NON_NULL,
-                  ofType: {
-                    kind: TypeKind.INPUT_OBJECT,
-                    name: 'TagWhereUniqueInput'
-                  }
-                }
-              }
-            ]
-          },
-          {
-            name: 'TagWhereUniqueInput',
-            kind: TypeKind.INPUT_OBJECT,
-            inputFields: [
-              {
-                name: 'id',
-                type: {
-                  kind: TypeKind.SCALAR,
-                  name: 'String'
-                }
-              }
-            ]
-          }
-        ]
+            }
+          ]
+        }
+      ]
+    };
+
+    it('drops field not in Create schema', () => {
+      const params = {
+        data: {
+          author: { id: 'author1' },
+          title: 'Foo',
+          tags: [{ id: 'tags1' }, { id: 'tags2' }],
+          tagsIds: ['tags1', 'tags2'],
+          createdAt: new Date()
+        }
       };
 
+      expect(
+          buildVariables(introspectionResult as unknown as IntrospectionResult)(
+              { type: { name: 'Post' } } as Resource,
+              CREATE,
+              params
+          )
+      ).toEqual({
+        data: {
+          author: { connect: { id: 'author1' } },
+          tags: {
+            connect: [{ id: 'tags1' }, { id: 'tags2' }]
+          },
+          title: 'Foo'
+        }
+      });
+    });
+
+    it('returns correct variables', () => {
       const params = {
         data: {
           author: { id: 'author1' },
@@ -177,103 +254,228 @@ describe('buildVariables', () => {
         }
       });
     });
+
+    it('decides between create and connect', () => {
+      const params = {
+        data: {
+          author: { name: 'author1' },
+          title: 'Foo',
+          tags: [{ id: 'tags1' }, { id: 'tags2' }],
+          tagsIds: ['tags1', 'tags2']
+        }
+      };
+
+      expect(
+          buildVariables(introspectionResult as unknown as IntrospectionResult)(
+              { type: { name: 'Post' } } as Resource,
+              CREATE,
+              params
+          )
+      ).toEqual({
+        data: {
+          author: { create: { name: 'author1' } },
+          tags: {
+            connect: [{ id: 'tags1' }, { id: 'tags2' }]
+          },
+          title: 'Foo'
+        }
+      });
+    });
+
+    it('decides between connect over create when specifying id', () => {
+      const params = {
+        data: {
+          author: { id: 'author1', name: 'differentName' },
+          title: 'Foo',
+          tags: [{ id: 'tags1' }, { id: 'tags2' }],
+          tagsIds: ['tags1', 'tags2']
+        }
+      };
+
+      expect(
+          buildVariables(introspectionResult as unknown as IntrospectionResult)(
+              { type: { name: 'Post' } } as Resource,
+              CREATE,
+              params
+          )
+      ).toEqual({
+        data: {
+          author: { connect: { id: 'author1' } },
+          tags: {
+            connect: [{ id: 'tags1' }, { id: 'tags2' }]
+          },
+          title: 'Foo'
+        }
+      });
+    });
+
+
+    // TODO: Determine whether this is desirable
+    xit('can handle array creates', () => {
+      const params = {
+        data: {
+          author: { id: 'author1' },
+          title: 'Foo',
+          tags: [{ name: 'tags1' }, { name: 'tags2' }],
+          tagsIds: ['tags1', 'tags2']
+        }
+      };
+
+      expect(
+          buildVariables(introspectionResult as unknown as IntrospectionResult)(
+              { type: { name: 'Post' } } as Resource,
+              CREATE,
+              params
+          )
+      ).toEqual({
+        data: {
+          author: { connect: { id: 'author1' } },
+          tags: {
+            create: [{ name: 'tags1' }, { name: 'tags2' }]
+          },
+          title: 'Foo'
+        }
+      });
+    })
   });
 
   describe('UPDATE', () => {
-    it('returns correct variables', () => {
-      const introspectionResult = {
-        types: [
-          {
-            name: 'Post',
-            fields: [{ name: 'title' }]
-          },
-          {
-            name: 'PostUpdateInput',
-            kind: TypeKind.INPUT_OBJECT,
-            inputFields: [
-              {
-                name: 'author',
-                type: {
-                  kind: TypeKind.NON_NULL,
-                  ofType: {
-                    kind: TypeKind.INPUT_OBJECT,
-                    name: 'AuthorUpdateOneInput'
-                  }
-                }
-              },
-              {
-                name: 'tags',
-                type: {
-                  kind: TypeKind.NON_NULL,
-                  ofType: {
-                    kind: TypeKind.INPUT_OBJECT,
-                    name: 'TagsUpdateManyInput'
-                  }
+    const introspectionResult = {
+      types: [
+        {
+          name: 'Post',
+          fields: [{ name: 'title' }]
+        },
+        {
+          name: 'PostUpdateInput',
+          kind: TypeKind.INPUT_OBJECT,
+          inputFields: [
+            {
+              name: 'author',
+              type: {
+                kind: TypeKind.NON_NULL,
+                ofType: {
+                  kind: TypeKind.INPUT_OBJECT,
+                  name: 'AuthorUpdateOneInput'
                 }
               }
-            ]
-          },
-          {
-            name: 'AuthorUpdateOneInput',
-            kind: TypeKind.INPUT_OBJECT,
-            inputFields: [
-              {
-                name: 'connect',
-                type: {
-                  kind: TypeKind.NON_NULL,
-                  ofType: {
-                    kind: TypeKind.INPUT_OBJECT,
-                    name: 'AuthorWhereUniqueInput'
-                  }
+            },
+            {
+              name: 'tags',
+              type: {
+                kind: TypeKind.NON_NULL,
+                ofType: {
+                  kind: TypeKind.INPUT_OBJECT,
+                  name: 'TagsUpdateManyInput'
                 }
               }
-            ]
-          },
-          {
-            name: 'TagsUpdateManyInput',
-            kind: TypeKind.INPUT_OBJECT,
-            inputFields: [
-              {
-                name: 'connect',
-                type: {
-                  kind: TypeKind.NON_NULL,
-                  ofType: {
-                    kind: TypeKind.INPUT_OBJECT,
-                    name: 'TagsWhereUniqueInput'
-                  }
+            },
+            {
+              name: 'title',
+              type: {
+                kind: TypeKind.SCALAR,
+                name: 'String'
+              }
+            }
+          ]
+        },
+        {
+          name: 'AuthorUpdateOneInput',
+          kind: TypeKind.INPUT_OBJECT,
+          inputFields: [
+            {
+              name: 'connect',
+              type: {
+                kind: TypeKind.NON_NULL,
+                ofType: {
+                  kind: TypeKind.INPUT_OBJECT,
+                  name: 'AuthorWhereUniqueInput'
                 }
               }
-            ]
-          },
-          {
-            name: 'TagsWhereUniqueInput',
-            kind: TypeKind.INPUT_OBJECT,
-            inputFields: [
-              {
-                name: 'id',
-                type: {
-                  kind: TypeKind.SCALAR,
-                  name: 'String'
+            }
+          ]
+        },
+        {
+          name: 'TagsUpdateManyInput',
+          kind: TypeKind.INPUT_OBJECT,
+          inputFields: [
+            {
+              name: 'connect',
+              type: {
+                kind: TypeKind.NON_NULL,
+                ofType: {
+                  kind: TypeKind.INPUT_OBJECT,
+                  name: 'TagsWhereUniqueInput'
                 }
               }
-            ]
-          },
-          {
-            name: 'AuthorWhereUniqueInput',
-            kind: TypeKind.INPUT_OBJECT,
-            inputFields: [
-              {
-                name: 'id',
-                type: {
-                  kind: TypeKind.SCALAR,
-                  name: 'String'
-                }
+            }
+          ]
+        },
+        {
+          name: 'TagsWhereUniqueInput',
+          kind: TypeKind.INPUT_OBJECT,
+          inputFields: [
+            {
+              name: 'id',
+              type: {
+                kind: TypeKind.SCALAR,
+                name: 'String'
               }
-            ]
-          }
-        ]
+            }
+          ]
+        },
+        {
+          name: 'AuthorWhereUniqueInput',
+          kind: TypeKind.INPUT_OBJECT,
+          inputFields: [
+            {
+              name: 'id',
+              type: {
+                kind: TypeKind.SCALAR,
+                name: 'String'
+              }
+            }
+          ]
+        }
+      ]
+    };
+
+    it('drops immutable fields', () => {
+      const params = {
+        data: {
+          id: 'postId',
+          tags: [{ id: 'tags1' }, { id: 'tags2' }],
+          tagsIds: ['tags1', 'tags2'],
+          author: { id: 'author1' },
+          title: 'Foo',
+          createdAt: new Date()
+        },
+        previousData: {
+          tags: [{ id: 'tags1' }],
+          tagsIds: ['tags1']
+        }
       };
 
+      expect(
+          buildVariables(introspectionResult as unknown as IntrospectionResult)(
+              { type: { name: 'Post' } } as Resource,
+              UPDATE,
+              params
+          )
+      ).toEqual({
+        where: { id: 'postId' },
+        data: {
+          author: { connect: { id: 'author1' } },
+          tags: {
+            connect: [{ id: 'tags2' }],
+            disconnect: []
+          },
+          title: 'Foo'
+        }
+      });
+    });
+
+    it('returns correct variables', () => {
       const params = {
         data: {
           id: 'postId',
@@ -306,6 +508,41 @@ describe('buildVariables', () => {
         }
       });
     });
+
+    it('disconnects nodes correctly', () => {
+      const params = {
+        data: {
+          id: 'postId',
+          tags: [{ id: 'tags1' }, { id: 'tags2' }],
+          tagsIds: ['tags1', 'tags2'],
+          author: { id: 'author1' },
+          title: 'Foo'
+        },
+        previousData: {
+          tags: [{ id: 'tags1' }, { id: 'tags2' }, { id: 'tags3' }],
+          tagsIds: ['tags1', 'tags2', 'tags3']
+        }
+      };
+
+      expect(
+          buildVariables(introspectionResult as unknown as IntrospectionResult)(
+              { type: { name: 'Post' } } as Resource,
+              UPDATE,
+              params
+          )
+      ).toEqual({
+        where: { id: 'postId' },
+        data: {
+          author: { connect: { id: 'author1' } },
+          tags: {
+            connect: [],
+            disconnect: [{id: 'tags3'}]
+          },
+          title: 'Foo'
+        }
+      });
+    });
+
   });
 
   describe('GET_MANY', () => {

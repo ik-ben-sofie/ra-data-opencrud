@@ -204,7 +204,20 @@ const buildObjectMutationData = ({
     PRISMA_CONNECT,
   );
 
-  const mutationType = hasConnect ? PRISMA_CONNECT : PRISMA_CREATE;
+  const presumedObjectName = key.charAt(0).toUpperCase() + key.slice(1);
+  const fieldNames = Object.keys(inputArg);
+  const userSpecifiedId = fieldNames.includes("id");
+  const processedFields = fieldNames.map((name: string) => inputFieldExistsForType(
+      introspectionResults,
+      `${presumedObjectName}WhereUniqueInput`,
+      inputArg[name],
+  ));
+
+  // Confirm the fields are also not available to connect with
+  const isUniqueParameter = processedFields.filter(bool => bool).length > 0 ||
+      userSpecifiedId;
+
+  const mutationType = hasConnect && isUniqueParameter ? PRISMA_CONNECT : PRISMA_CREATE;
 
   const fields = buildReferenceField({
     inputArg,
@@ -219,7 +232,7 @@ const buildObjectMutationData = ({
     return {};
   }
 
-  // Else, connect the nodes
+  // Else, connect the nodes or create them
   return {
     [key]: { [mutationType]: { ...fields } },
   };
@@ -346,7 +359,7 @@ const buildCreateVariables = (introspectionResults: IntrospectionResult) => (
 
       const inputType = findInputFieldForType(
         introspectionResults,
-        `${resource.type.name}UpdateInput`,
+        `${resource.type.name}CreateInput`,
         key,
       );
 
@@ -367,6 +380,7 @@ const buildCreateVariables = (introspectionResults: IntrospectionResult) => (
       if (!inputType) {
         return acc;
       }
+
       if (Array.isArray(params.data[key])) {
         return {
           ...acc,
@@ -378,9 +392,10 @@ const buildCreateVariables = (introspectionResults: IntrospectionResult) => (
       }
 
       if (isObject(params.data[key])) {
+        // TODO: Determine whether this check is obsolete
         const inputType = findInputFieldForType(
           introspectionResults,
-          `${resource.type.name}UpdateInput`,
+          `${resource.type.name}CreateInput`,
           key,
         );
 
@@ -388,6 +403,8 @@ const buildCreateVariables = (introspectionResults: IntrospectionResult) => (
           return acc;
         }
 
+        // If the inputType is not equal to a predefined
+        // Scalar type (i.e. String, Int, Long)
         if (inputType.kind !== 'SCALAR') {
           const typeName = `${resource.type.name}CreateInput`;
           const data = buildObjectMutationData({
