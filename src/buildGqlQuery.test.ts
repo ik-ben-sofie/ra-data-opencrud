@@ -189,12 +189,31 @@ describe('buildFields', () => {
     });
 });
 
-/**
- * FIXME: These tests fail, yet have no impact on the workings of the code
- */
 describe('buildGqlQuery', () => {
     const introspectionResults = {
-        resources: [{type: {name: 'resourceType'}}],
+        queries: [{
+            name: 'command',
+            args: [{
+                name: 'foo',
+                type: {
+                    kind: TypeKind.SCALAR,
+                    name: 'Int'
+                }
+            }],
+            type: {
+                kind: TypeKind.OBJECT,
+                name: 'Command'
+            }
+        }],
+        resources: [{type: {name: 'resourceType'}}, {
+            type: {name: 'command'},
+            GET_ONE: {
+                type: {
+                    kind: TypeKind.OBJECT,
+                    name: 'Command'
+                }
+            }
+        }],
         types: [
             {
                 name: 'linkedType',
@@ -204,22 +223,36 @@ describe('buildGqlQuery', () => {
                         type: {kind: TypeKind.SCALAR, name: 'bar'}
                     }
                 ]
+            },
+            {
+                name: 'Command',
+                kind: TypeKind.OBJECT,
+                fields: [
+                    {
+                        name: 'foo',
+                        type: {kind: TypeKind.SCALAR, name: 'String'}
+                    }
+                ]
             }
         ]
     };
 
-    const resource = {
+    const resource: Resource = {
         type: {
+            kind: TypeKind.OBJECT,
+            name: 'Command',
+            interfaces: [
+                // {kind: TypeKind.INTERFACE, name: 'test'}
+            ],
             fields: [
-                {type: {kind: TypeKind.SCALAR, name: ''}, name: 'foo'},
-                {type: {kind: TypeKind.SCALAR, name: '_foo'}, name: 'foo1'},
+                {args :[], type: {kind: TypeKind.SCALAR, name: 'String'}, name: 'foo', isDeprecated: false},
                 {
-                    type: {kind: TypeKind.OBJECT, name: 'linkedType'},
-                    name: 'linked'
+                  args :[], type: {kind: TypeKind.OBJECT, name: 'linkedType'},
+                    name: 'linked', isDeprecated: false
                 },
                 {
-                    type: {kind: TypeKind.OBJECT, name: 'resourceType'},
-                    name: 'resource'
+                  args :[], type: {kind: TypeKind.OBJECT, name: 'resourceType'},
+                    name: 'resource', isDeprecated: false
                 }
             ]
         }
@@ -252,11 +285,11 @@ describe('buildGqlQuery', () => {
         expect(
             print(
                 buildGqlQuery(introspectionResults as unknown as IntrospectionResult)(
-                    resource as unknown as Resource,
+                    resource,
                     GET_LIST,
                     queryType as Query,
                     params,
-                    {} as DocumentNode
+                    null as unknown as DocumentNode
                 )
             )
         ).toEqual(
@@ -283,11 +316,11 @@ describe('buildGqlQuery', () => {
         expect(
             print(
                 buildGqlQuery(introspectionResults as unknown as IntrospectionResult)(
-                    resource as unknown as Resource,
+                    resource as Resource,
                     GET_MANY,
                     queryType as Query,
                     params,
-                    {} as DocumentNode
+                    null as unknown as DocumentNode
                 )
             )
         ).toEqual(
@@ -318,7 +351,7 @@ describe('buildGqlQuery', () => {
                     GET_MANY_REFERENCE,
                     queryType as Query,
                     params,
-                    {} as DocumentNode
+                    null as unknown as DocumentNode
                 )
             )
         ).toEqual(
@@ -347,14 +380,14 @@ describe('buildGqlQuery', () => {
                 buildGqlQuery(introspectionResults as unknown as IntrospectionResult)(
                     resource as unknown as Resource,
                     GET_ONE,
-                    {...queryType, name: 'getCommand'} as Query,
+                    {...queryType, name: 'command'} as Query,
                     params,
-                    {} as DocumentNode
+                    null as unknown as DocumentNode
                 )
             )
         ).toEqual(
-            `query getCommand($foo: Int!) {
-  data: getCommand(foo: $foo) {
+            `query command($foo: Int!) {
+  data: command(foo: $foo) {
     foo
     linked {
       foo
@@ -375,7 +408,7 @@ describe('buildGqlQuery', () => {
                     UPDATE,
                     {...queryType, name: 'updateCommand'} as Query,
                     params,
-                    {} as DocumentNode
+                    null as unknown as DocumentNode
                 )
             )
         ).toEqual(
@@ -401,7 +434,7 @@ describe('buildGqlQuery', () => {
                     CREATE,
                     {...queryType, name: 'createCommand'} as Query,
                     params,
-                    {} as DocumentNode
+                    null as unknown as DocumentNode
                 )
             )
         ).toEqual(
@@ -427,7 +460,7 @@ describe('buildGqlQuery', () => {
                     DELETE,
                     {...queryType, name: 'deleteCommand'} as Query,
                     params,
-                    {} as DocumentNode
+                    null as unknown as DocumentNode
                 )
             )
         ).toEqual(

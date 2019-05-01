@@ -182,6 +182,7 @@ const buildFieldsFromFragment = (
       );
     }
   }
+  if(!(parsedFragment as any).definitions) return [];
   return (parsedFragment as any).definitions[0].selectionSet.selections;
 };
 
