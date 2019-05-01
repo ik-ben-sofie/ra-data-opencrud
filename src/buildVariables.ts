@@ -3,8 +3,8 @@ import isObject from 'lodash/isObject';
 import { CREATE, DELETE, GET_LIST, GET_MANY, GET_MANY_REFERENCE, GET_ONE, UPDATE } from 'react-admin';
 import { IntrospectionResult, Resource } from './constants/interfaces';
 
-import { PRISMA_CONNECT, PRISMA_CREATE, PRISMA_DISCONNECT } from './constants/mutations';
-import { computeFieldsToAddRemoveUpdate } from './utils/computeAddRemoveUpdate';
+import {PRISMA_CONNECT, PRISMA_CREATE, PRISMA_DISCONNECT, PRISMA_UPDATE} from './constants/mutations';
+import {computedNestedFieldsToUpdate, computeFieldsToAddRemoveUpdate} from './utils/computeAddRemoveUpdate';
 
 import getFinalType from './utils/getFinalType';
 
@@ -272,13 +272,18 @@ const buildUpdateVariables = (introspectionResults: IntrospectionResult) => (
 
       if (Array.isArray(params.data[key])) {
         //TODO: Make connect, disconnect and update overridable
-        //TODO: Make updates working
         const {
           fieldsToAdd,
-          fieldsToRemove, /* fieldsToUpdate */
+          fieldsToRemove, fieldsToUpdate
         } = computeFieldsToAddRemoveUpdate(
           params.previousData[`${key}Ids`],
           params.data[`${key}Ids`],
+        );
+
+        const updatedFields: any[] = computedNestedFieldsToUpdate(
+            fieldsToUpdate,
+            params.previousData[key],
+            params.data[key]
         );
 
         return {
@@ -288,7 +293,7 @@ const buildUpdateVariables = (introspectionResults: IntrospectionResult) => (
             [key]: {
               [PRISMA_CONNECT]: fieldsToAdd,
               [PRISMA_DISCONNECT]: fieldsToRemove,
-              //[PRISMA_UPDATE]: fieldsToUpdate
+              [PRISMA_UPDATE]: updatedFields
             },
           },
         };

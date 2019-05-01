@@ -468,7 +468,8 @@ describe('buildVariables', () => {
           author: { connect: { id: 'author1' } },
           tags: {
             connect: [{ id: 'tags2' }],
-            disconnect: []
+            disconnect: [],
+            update: []
           },
           title: 'Foo'
         }
@@ -502,7 +503,8 @@ describe('buildVariables', () => {
           author: { connect: { id: 'author1' } },
           tags: {
             connect: [{ id: 'tags2' }],
-            disconnect: []
+            disconnect: [],
+            update: []
           },
           title: 'Foo'
         }
@@ -536,13 +538,49 @@ describe('buildVariables', () => {
           author: { connect: { id: 'author1' } },
           tags: {
             connect: [],
-            disconnect: [{id: 'tags3'}]
+            disconnect: [{id: 'tags3'}],
+            update: []
           },
           title: 'Foo'
         }
       });
     });
 
+    it('can update nested scalars', () => {
+      const params = {
+        data: {
+          id: 'postId',
+          tags: [{ id: 'tags1', name: 'test' }, { id: 'tags2' }],
+          tagsIds: ['tags1', 'tags2'],
+          author: { id: 'author1' },
+          title: 'Foo'
+        },
+        previousData: {
+          tags: [{ id: 'tags1', name: 'works' }, { id: 'tags2' }],
+          tagsIds: ['tags1', 'tags2']
+        }
+      };
+
+      expect(
+          buildVariables(introspectionResult as unknown as IntrospectionResult)(
+              { type: { name: 'Post' } } as Resource,
+              UPDATE,
+              params
+          )
+      ).toEqual({
+        where: { id: 'postId' },
+        data: {
+          author: { connect: { id: 'author1' } },
+          tags: {
+            connect: [],
+            disconnect: [],
+            update: [{where: {id: 'tags1'}, data: {name: 'test'}}]
+          },
+          title: 'Foo'
+        }
+      });
+
+    })
   });
 
   describe('GET_MANY', () => {
