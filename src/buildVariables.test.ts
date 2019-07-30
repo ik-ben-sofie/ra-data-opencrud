@@ -1,13 +1,6 @@
-import {
-  GET_LIST,
-  GET_MANY,
-  GET_MANY_REFERENCE,
-  CREATE,
-  UPDATE,
-  DELETE
-} from 'react-admin';
-import buildVariables from './buildVariables';
 import { TypeKind } from 'graphql/type/introspection';
+import { CREATE, DELETE, GET_LIST, GET_MANY, GET_MANY_REFERENCE, UPDATE } from 'react-admin';
+import buildVariables from './buildVariables';
 import { IntrospectionResult, Resource } from './constants/interfaces';
 
 describe('buildVariables', () => {
@@ -18,37 +11,37 @@ describe('buildVariables', () => {
           {
             kind: 'INPUT_OBJECT',
             name: 'PostWhereInput',
-            inputFields: [{ name: 'tags_some', type: { kind: '', name: '' } }]
-          }
-        ]
+            inputFields: [{ name: 'tags_some', type: { kind: '', name: '' } }],
+          },
+        ],
       };
       const params = {
         filter: {
           ids: ['foo1', 'foo2'],
           tags: { id: ['tag1', 'tag2'] },
           'author.id': 'author1',
-          views: 100
+          views: 100,
         },
         pagination: { page: 10, perPage: 10 },
-        sort: { field: 'sortField', order: 'DESC' }
+        sort: { field: 'sortField', order: 'DESC' },
       };
 
       expect(
         buildVariables(introspectionResult as unknown as IntrospectionResult)(
           { type: { name: 'Post' } } as Resource,
           GET_LIST,
-          params
-        )
+          params,
+        ),
       ).toEqual({
         where: {
           id_in: ['foo1', 'foo2'],
           tags_some: { id_in: ['tag1', 'tag2'] },
           author: { id: 'author1' },
-          views: 100
+          views: 100,
         },
         first: 10,
         orderBy: 'sortField_DESC',
-        skip: 90
+        skip: 90,
       });
     });
   });
@@ -60,9 +53,9 @@ describe('buildVariables', () => {
           name: 'Post',
           fields: [
             {
-              name: 'title'
-            }
-          ]
+              name: 'title',
+            },
+          ],
         },
         {
           name: 'PostCreateInput',
@@ -74,9 +67,9 @@ describe('buildVariables', () => {
                 kind: TypeKind.NON_NULL,
                 ofType: {
                   kind: TypeKind.INPUT_OBJECT,
-                  name: 'AuthorCreateOneInput'
-                }
-              }
+                  name: 'AuthorCreateOneInput',
+                },
+              },
             },
             {
               name: 'tags',
@@ -84,18 +77,18 @@ describe('buildVariables', () => {
                 kind: TypeKind.NON_NULL,
                 ofType: {
                   kind: TypeKind.INPUT_OBJECT,
-                  name: 'TagCreateManyInput'
-                }
-              }
+                  name: 'TagCreateManyInput',
+                },
+              },
             },
             {
               name: 'title',
               type: {
                 kind: TypeKind.SCALAR,
-                name: 'String'
-              }
-            }
-          ]
+                name: 'String',
+              },
+            },
+          ],
         },
         {
           name: 'AuthorCreateOneInput',
@@ -107,9 +100,9 @@ describe('buildVariables', () => {
                 kind: TypeKind.NON_NULL,
                 ofType: {
                   kind: TypeKind.INPUT_OBJECT,
-                  name: 'AuthorWhereUniqueInput'
-                }
-              }
+                  name: 'AuthorWhereUniqueInput',
+                },
+              },
             },
             {
               name: 'create',
@@ -117,11 +110,11 @@ describe('buildVariables', () => {
                 kind: TypeKind.NON_NULL,
                 ofType: {
                   kind: TypeKind.INPUT_OBJECT,
-                  name: 'AuthorCreateInput'
-                }
+                  name: 'AuthorCreateInput',
+                },
               },
-            }
-          ]
+            },
+          ],
         },
         {
           name: 'AuthorCreateInput',
@@ -130,9 +123,9 @@ describe('buildVariables', () => {
             name: 'name',
             type: {
               kind: TypeKind.SCALAR,
-              name: 'String'
-            }
-          }]
+              name: 'String',
+            },
+          }],
         },
         {
           name: 'AuthorWhereUniqueInput',
@@ -142,10 +135,10 @@ describe('buildVariables', () => {
               name: 'id',
               type: {
                 kind: TypeKind.SCALAR,
-                name: 'String'
-              }
-            }
-          ]
+                name: 'String',
+              },
+            },
+          ],
         },
         {
           name: 'TagCreateManyInput',
@@ -157,9 +150,9 @@ describe('buildVariables', () => {
                 kind: TypeKind.NON_NULL,
                 ofType: {
                   kind: TypeKind.INPUT_OBJECT,
-                  name: 'TagWhereUniqueInput'
-                }
-              }
+                  name: 'TagWhereUniqueInput',
+                },
+              },
             },
             {
               name: 'create',
@@ -167,11 +160,11 @@ describe('buildVariables', () => {
                 kind: TypeKind.NON_NULL,
                 ofType: {
                   kind: TypeKind.INPUT_OBJECT,
-                  name: 'TagCreateInput'
-                }
-              }
-            }
-          ]
+                  name: 'TagCreateInput',
+                },
+              },
+            },
+          ],
         },
         {
           name: 'TagCreateInput',
@@ -180,9 +173,9 @@ describe('buildVariables', () => {
             name: 'name',
             type: {
               kind: TypeKind.SCALAR,
-              name: 'String'
-            }
-          }]
+              name: 'String',
+            },
+          }],
         },
         {
           name: 'TagWhereUniqueInput',
@@ -192,12 +185,12 @@ describe('buildVariables', () => {
               name: 'id',
               type: {
                 kind: TypeKind.SCALAR,
-                name: 'String'
-              }
-            }
-          ]
-        }
-      ]
+                name: 'String',
+              },
+            },
+          ],
+        },
+      ],
     };
 
     it('drops field not in Create schema', () => {
@@ -207,24 +200,24 @@ describe('buildVariables', () => {
           title: 'Foo',
           tags: [{ id: 'tags1' }, { id: 'tags2' }],
           tagsIds: ['tags1', 'tags2'],
-          createdAt: new Date()
-        }
+          createdAt: new Date(),
+        },
       };
 
       expect(
-          buildVariables(introspectionResult as unknown as IntrospectionResult)(
-              { type: { name: 'Post' } } as Resource,
-              CREATE,
-              params
-          )
+        buildVariables(introspectionResult as unknown as IntrospectionResult)(
+          { type: { name: 'Post' } } as Resource,
+          CREATE,
+          params,
+        ),
       ).toEqual({
         data: {
           author: { connect: { id: 'author1' } },
           tags: {
-            connect: [{ id: 'tags1' }, { id: 'tags2' }]
+            connect: [{ id: 'tags1' }, { id: 'tags2' }],
           },
-          title: 'Foo'
-        }
+          title: 'Foo',
+        },
       });
     });
 
@@ -234,24 +227,24 @@ describe('buildVariables', () => {
           author: { id: 'author1' },
           title: 'Foo',
           tags: [{ id: 'tags1' }, { id: 'tags2' }],
-          tagsIds: ['tags1', 'tags2']
-        }
+          tagsIds: ['tags1', 'tags2'],
+        },
       };
 
       expect(
         buildVariables(introspectionResult as unknown as IntrospectionResult)(
           { type: { name: 'Post' } } as Resource,
           CREATE,
-          params
-        )
+          params,
+        ),
       ).toEqual({
         data: {
           author: { connect: { id: 'author1' } },
           tags: {
-            connect: [{ id: 'tags1' }, { id: 'tags2' }]
+            connect: [{ id: 'tags1' }, { id: 'tags2' }],
           },
-          title: 'Foo'
-        }
+          title: 'Foo',
+        },
       });
     });
 
@@ -261,24 +254,24 @@ describe('buildVariables', () => {
           author: { name: 'author1' },
           title: 'Foo',
           tags: [{ id: 'tags1' }, { id: 'tags2' }],
-          tagsIds: ['tags1', 'tags2']
-        }
+          tagsIds: ['tags1', 'tags2'],
+        },
       };
 
       expect(
-          buildVariables(introspectionResult as unknown as IntrospectionResult)(
-              { type: { name: 'Post' } } as Resource,
-              CREATE,
-              params
-          )
+        buildVariables(introspectionResult as unknown as IntrospectionResult)(
+          { type: { name: 'Post' } } as Resource,
+          CREATE,
+          params,
+        ),
       ).toEqual({
         data: {
           author: { create: { name: 'author1' } },
           tags: {
-            connect: [{ id: 'tags1' }, { id: 'tags2' }]
+            connect: [{ id: 'tags1' }, { id: 'tags2' }],
           },
-          title: 'Foo'
-        }
+          title: 'Foo',
+        },
       });
     });
 
@@ -288,24 +281,24 @@ describe('buildVariables', () => {
           author: { id: 'author1', name: 'differentName' },
           title: 'Foo',
           tags: [{ id: 'tags1' }, { id: 'tags2' }],
-          tagsIds: ['tags1', 'tags2']
-        }
+          tagsIds: ['tags1', 'tags2'],
+        },
       };
 
       expect(
-          buildVariables(introspectionResult as unknown as IntrospectionResult)(
-              { type: { name: 'Post' } } as Resource,
-              CREATE,
-              params
-          )
+        buildVariables(introspectionResult as unknown as IntrospectionResult)(
+          { type: { name: 'Post' } } as Resource,
+          CREATE,
+          params,
+        ),
       ).toEqual({
         data: {
           author: { connect: { id: 'author1' } },
           tags: {
-            connect: [{ id: 'tags1' }, { id: 'tags2' }]
+            connect: [{ id: 'tags1' }, { id: 'tags2' }],
           },
-          title: 'Foo'
-        }
+          title: 'Foo',
+        },
       });
     });
 
@@ -317,26 +310,26 @@ describe('buildVariables', () => {
           author: { id: 'author1' },
           title: 'Foo',
           tags: [{ name: 'tags1' }, { name: 'tags2' }],
-          tagsIds: ['tags1', 'tags2']
-        }
+          tagsIds: ['tags1', 'tags2'],
+        },
       };
 
       expect(
-          buildVariables(introspectionResult as unknown as IntrospectionResult)(
-              { type: { name: 'Post' } } as Resource,
-              CREATE,
-              params
-          )
+        buildVariables(introspectionResult as unknown as IntrospectionResult)(
+          { type: { name: 'Post' } } as Resource,
+          CREATE,
+          params,
+        ),
       ).toEqual({
         data: {
           author: { connect: { id: 'author1' } },
           tags: {
-            create: [{ name: 'tags1' }, { name: 'tags2' }]
+            create: [{ name: 'tags1' }, { name: 'tags2' }],
           },
-          title: 'Foo'
-        }
+          title: 'Foo',
+        },
       });
-    })
+    });
   });
 
   describe('UPDATE', () => {
@@ -344,7 +337,7 @@ describe('buildVariables', () => {
       types: [
         {
           name: 'Post',
-          fields: [{ name: 'title' }]
+          fields: [{ name: 'title' }],
         },
         {
           name: 'PostUpdateInput',
@@ -356,9 +349,9 @@ describe('buildVariables', () => {
                 kind: TypeKind.NON_NULL,
                 ofType: {
                   kind: TypeKind.INPUT_OBJECT,
-                  name: 'AuthorUpdateOneInput'
-                }
-              }
+                  name: 'AuthorUpdateOneInput',
+                },
+              },
             },
             {
               name: 'tags',
@@ -366,18 +359,18 @@ describe('buildVariables', () => {
                 kind: TypeKind.NON_NULL,
                 ofType: {
                   kind: TypeKind.INPUT_OBJECT,
-                  name: 'TagsUpdateManyInput'
-                }
-              }
+                  name: 'TagsUpdateManyInput',
+                },
+              },
             },
             {
               name: 'title',
               type: {
                 kind: TypeKind.SCALAR,
-                name: 'String'
-              }
-            }
-          ]
+                name: 'String',
+              },
+            },
+          ],
         },
         {
           name: 'AuthorUpdateOneInput',
@@ -389,11 +382,11 @@ describe('buildVariables', () => {
                 kind: TypeKind.NON_NULL,
                 ofType: {
                   kind: TypeKind.INPUT_OBJECT,
-                  name: 'AuthorWhereUniqueInput'
-                }
-              }
-            }
-          ]
+                  name: 'AuthorWhereUniqueInput',
+                },
+              },
+            },
+          ],
         },
         {
           name: 'TagsUpdateManyInput',
@@ -405,11 +398,11 @@ describe('buildVariables', () => {
                 kind: TypeKind.NON_NULL,
                 ofType: {
                   kind: TypeKind.INPUT_OBJECT,
-                  name: 'TagsWhereUniqueInput'
-                }
-              }
-            }
-          ]
+                  name: 'TagsWhereUniqueInput',
+                },
+              },
+            },
+          ],
         },
         {
           name: 'TagsWhereUniqueInput',
@@ -419,10 +412,10 @@ describe('buildVariables', () => {
               name: 'id',
               type: {
                 kind: TypeKind.SCALAR,
-                name: 'String'
-              }
-            }
-          ]
+                name: 'String',
+              },
+            },
+          ],
         },
         {
           name: 'AuthorWhereUniqueInput',
@@ -432,12 +425,12 @@ describe('buildVariables', () => {
               name: 'id',
               type: {
                 kind: TypeKind.SCALAR,
-                name: 'String'
-              }
-            }
-          ]
-        }
-      ]
+                name: 'String',
+              },
+            },
+          ],
+        },
+      ],
     };
 
     it('drops immutable fields', () => {
@@ -448,20 +441,20 @@ describe('buildVariables', () => {
           tagsIds: ['tags1', 'tags2'],
           author: { id: 'author1' },
           title: 'Foo',
-          createdAt: new Date()
+          createdAt: new Date(),
         },
         previousData: {
           tags: [{ id: 'tags1' }],
-          tagsIds: ['tags1']
-        }
+          tagsIds: ['tags1'],
+        },
       };
 
       expect(
-          buildVariables(introspectionResult as unknown as IntrospectionResult)(
-              { type: { name: 'Post' } } as Resource,
-              UPDATE,
-              params
-          )
+        buildVariables(introspectionResult as unknown as IntrospectionResult)(
+          { type: { name: 'Post' } } as Resource,
+          UPDATE,
+          params,
+        ),
       ).toEqual({
         where: { id: 'postId' },
         data: {
@@ -469,10 +462,10 @@ describe('buildVariables', () => {
           tags: {
             connect: [{ id: 'tags2' }],
             disconnect: [],
-            update: []
+            update: [],
           },
-          title: 'Foo'
-        }
+          title: 'Foo',
+        },
       });
     });
 
@@ -483,20 +476,20 @@ describe('buildVariables', () => {
           tags: [{ id: 'tags1' }, { id: 'tags2' }],
           tagsIds: ['tags1', 'tags2'],
           author: { id: 'author1' },
-          title: 'Foo'
+          title: 'Foo',
         },
         previousData: {
           tags: [{ id: 'tags1' }],
-          tagsIds: ['tags1']
-        }
+          tagsIds: ['tags1'],
+        },
       };
 
       expect(
         buildVariables(introspectionResult as unknown as IntrospectionResult)(
           { type: { name: 'Post' } } as Resource,
           UPDATE,
-          params
-        )
+          params,
+        ),
       ).toEqual({
         where: { id: 'postId' },
         data: {
@@ -504,10 +497,10 @@ describe('buildVariables', () => {
           tags: {
             connect: [{ id: 'tags2' }],
             disconnect: [],
-            update: []
+            update: [],
           },
-          title: 'Foo'
-        }
+          title: 'Foo',
+        },
       });
     });
 
@@ -518,31 +511,31 @@ describe('buildVariables', () => {
           tags: [{ id: 'tags1' }, { id: 'tags2' }],
           tagsIds: ['tags1', 'tags2'],
           author: { id: 'author1' },
-          title: 'Foo'
+          title: 'Foo',
         },
         previousData: {
           tags: [{ id: 'tags1' }, { id: 'tags2' }, { id: 'tags3' }],
-          tagsIds: ['tags1', 'tags2', 'tags3']
-        }
+          tagsIds: ['tags1', 'tags2', 'tags3'],
+        },
       };
 
       expect(
-          buildVariables(introspectionResult as unknown as IntrospectionResult)(
-              { type: { name: 'Post' } } as Resource,
-              UPDATE,
-              params
-          )
+        buildVariables(introspectionResult as unknown as IntrospectionResult)(
+          { type: { name: 'Post' } } as Resource,
+          UPDATE,
+          params,
+        ),
       ).toEqual({
         where: { id: 'postId' },
         data: {
           author: { connect: { id: 'author1' } },
           tags: {
             connect: [],
-            disconnect: [{id: 'tags3'}],
-            update: []
+            disconnect: [{ id: 'tags3' }],
+            update: [],
           },
-          title: 'Foo'
-        }
+          title: 'Foo',
+        },
       });
     });
 
@@ -553,20 +546,20 @@ describe('buildVariables', () => {
           tags: [{ id: 'tags1', name: 'test' }, { id: 'tags2' }],
           tagsIds: ['tags1', 'tags2'],
           author: { id: 'author1' },
-          title: 'Foo'
+          title: 'Foo',
         },
         previousData: {
           tags: [{ id: 'tags1', name: 'works' }, { id: 'tags2' }],
-          tagsIds: ['tags1', 'tags2']
-        }
+          tagsIds: ['tags1', 'tags2'],
+        },
       };
 
       expect(
-          buildVariables(introspectionResult as unknown as IntrospectionResult)(
-              { type: { name: 'Post' } } as Resource,
-              UPDATE,
-              params
-          )
+        buildVariables(introspectionResult as unknown as IntrospectionResult)(
+          { type: { name: 'Post' } } as Resource,
+          UPDATE,
+          params,
+        ),
       ).toEqual({
         where: { id: 'postId' },
         data: {
@@ -574,29 +567,66 @@ describe('buildVariables', () => {
           tags: {
             connect: [],
             disconnect: [],
-            update: [{where: {id: 'tags1'}, data: {name: 'test'}}]
+            update: [{ where: { id: 'tags1' }, data: { name: 'test' } }],
           },
-          title: 'Foo'
-        }
+          title: 'Foo',
+        },
       });
 
-    })
+    });
   });
 
   describe('GET_MANY', () => {
     it('returns correct variables', () => {
       const params = {
-        ids: ['tag1', 'tag2']
+        ids: ['tag1', 'tag2'],
       };
 
       expect(
         buildVariables({} as IntrospectionResult)(
           { type: { name: 'Post' } } as Resource,
           GET_MANY,
-          params
-        )
+          params,
+        ),
       ).toEqual({
-        where: { id_in: ['tag1', 'tag2'] }
+        where: { id_in: ['tag1', 'tag2'] },
+      });
+    });
+    it('returns correct OR query', () => {
+      const params = {
+        filter: {OR: [{ roles_some: { name: 'portal-mentor' } }, { roles_some: { name: 'portal-recruiter' } }]},
+        pagination: {
+          perPage: 20,
+          page: 1,
+        },
+        sort: {
+          field: 'id',
+          order: 'DESC'
+        }
+      };
+
+      expect(
+        buildVariables({types: [{
+          name: 'PostWhereInput',
+            inputFields: [{
+            name: 'OR'
+            }]
+          }], queries: [], resources:[], schema: {
+          directives: [],
+            types:[],
+            queryType: null,
+            mutationType: null,
+            subscriptionType: null,
+          }} as unknown as IntrospectionResult)(
+          { type: { name: 'Post' } } as Resource,
+          GET_LIST,
+          params,
+        ),
+      ).toEqual({
+        first: 20,
+        orderBy: 'id_DESC',
+        skip: 0,
+        where: { OR: [{ roles_some: { name: 'portal-mentor' } }, { roles_some: { name: 'portal-recruiter' } }] },
       });
     });
   });
@@ -605,17 +635,17 @@ describe('buildVariables', () => {
     it('returns correct variables', () => {
       const params = {
         target: 'author.id',
-        id: 'author1'
+        id: 'author1',
       };
 
       expect(
         buildVariables({} as IntrospectionResult)(
           { type: { name: 'Post' } } as Resource,
           GET_MANY_REFERENCE,
-          params
-        )
+          params,
+        ),
       ).toEqual({
-        where: { author: { id: 'author1' } }
+        where: { author: { id: 'author1' } },
       });
     });
   });
@@ -623,17 +653,17 @@ describe('buildVariables', () => {
   describe('DELETE', () => {
     it('returns correct variables', () => {
       const params = {
-        id: 'post1'
+        id: 'post1',
       };
 
       expect(
         buildVariables({} as IntrospectionResult)(
           { type: { name: 'Post', inputFields: [] } } as any,
           DELETE,
-          params
-        )
+          params,
+        ),
       ).toEqual({
-        where: { id: 'post1' }
+        where: { id: 'post1' },
       });
     });
   });

@@ -31,7 +31,7 @@ const buildGetListVariables = (introspectionResults: IntrospectionResult) => (
       ) as IntrospectionInputObjectType;
       const inputField = type.inputFields.find(t => t.name === key);
 
-      if (!!inputField) {
+      if (!!inputField && !['AND', 'OR'].includes(key)) {
         return {
           ...acc,
           [key]: { id_in: params.filter[key] },
